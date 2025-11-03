@@ -1,0 +1,25 @@
+{
+    "aliyun_key": "sk-2e4d76faa7904ef68ec3079b16177cc2",
+    "aliyun_model": "deepseek-r1",
+    "qwen_max_model": "qwen-max-latest",
+    "llama4_maverick_model": "llama-4-maverick-17b-128e-instruct",
+    "aliyun_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+
+    "silicon_key": "sk-qsskaxojqquuqaygahzsgylwfcpuszhpparfwvqarksqljlp",
+    "silicon_model": "deepseek-ai/DeepSeek-R1",
+    "silicon_url": "https://api.siliconflow.cn/v1",
+    "_comment": "硅基流动的快没了",
+
+    "claude_url": "https://jeniya.top",
+    "claude_key": "sk-P1t07S6eOPf8imm3Vnl9i5dPmDYarE8LA7dDGOM79wk0yEFu",
+    "claude_model": "claude-3-7-sonnet-20250219",
+
+    "gpt_4o_url": "https://jeniya.top/v1",
+    "gpt_4o_key": "sk-3Qx94w5Xl04tE7qnRSoeW1LTSbgvuN1a82I1JFHQ3xcz3JzE",
+    "gpt_4o_model": "gpt-4o-2024-11-20",
+    
+    "aliyun_embedding_model": "text-embedding-v3",
+    "storage": "D:/WorkSpace/aadl_model/storage",
+    
+    "AADL_INSPECTOR_PATH": "D:/SoftWare/AADL-inspector/AI-1.10/bin/AADLInspector.exe"
+}

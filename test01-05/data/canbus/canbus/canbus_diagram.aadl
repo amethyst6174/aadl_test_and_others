@@ -1,0 +1,206 @@
+----------------------------------------
+-- Solar Vehicle with CAN Bus
+-- Graphical properties for Stood diagrams
+-- (c) Ellidiss Technologies
+-- Updated: March 2023
+----------------------------------------
+
+PACKAGE canbus_Diag
+PUBLIC
+WITH canbus_Pkg;
+WITH Stood;
+WITH AI;
+
+SYSTEM CanBus
+END CanBus;
+
+SYSTEM IMPLEMENTATION CanBus.diagram
+EXTENDS canbus_Pkg::CanBus.others
+PROPERTIES
+-- Remove next line to ignore graphical extensions
+  AI::root_system => "SELECTED";
+
+-- The following properties set the diagram layout in Stood instance diagram editor 
+-- of the main system:
+  Stood::Box_Position => "700 400 1200 800";
+  Stood::Box_Position => "250 250 450 400" APPLIES TO Dashboard;
+  Stood::Box_Position => "350 450 550 600" APPLIES TO SolarCells;
+  Stood::Box_Position => "450 650 650 800" APPLIES TO Batteries;
+  Stood::Box_Position => "1250 650 1450 800" APPLIES TO Motors;
+  Stood::Box_Position => "1350 350 1550 500" APPLIES TO Signalling;
+  Stood::Box_Position => "800 300 1150 600" APPLIES TO MainECU;
+  Stood::Box_Position => "650 1000 1050 1150" APPLIES TO CAN;
+  Stood::Port_Position => "right" APPLIES TO Dashboard.commands;
+  Stood::Port_Position => "right" APPLIES TO Dashboard.status;
+  Stood::Port_Position => "right" APPLIES TO SolarCells.status;
+  Stood::Port_Position => "right" APPLIES TO Batteries.status;
+  Stood::Port_Position => "right" APPLIES TO Batteries.control;
+  Stood::Port_Position => "left" APPLIES TO Motors.status;
+  Stood::Port_Position => "left" APPLIES TO Motors.control;
+  Stood::Port_Position => "left" APPLIES TO Signalling.control;
+  Stood::Port_Position => "left" APPLIES TO MainECU.commands;
+  Stood::Port_Position => "left" APPLIES TO MainECU.status;
+  Stood::Port_Position => "right" APPLIES TO MainECU.signals_control;
+  Stood::Port_Position => "left" APPLIES TO MainECU.cells_status;
+  Stood::Port_Position => "right" APPLIES TO MainECU.motors_status;
+  Stood::Port_Position => "right" APPLIES TO MainECU.motors_control;
+  Stood::Port_Position => "left" APPLIES TO MainECU.batteries_status;
+  Stood::Port_Position => "left" APPLIES TO MainECU.batteries_control;
+  Stood::Link_Position => "484 316 726 316 726 366 770 366" APPLIES TO cnx_0;
+  Stood::Link_Position => "584 516 667 516 667 440 770 440" APPLIES TO cnx_1;
+  Stood::Link_Position => "684 716 725 716 725 514 770 514" APPLIES TO cnx_2;
+  Stood::Link_Position => "1220 716 1214 716 1214 465 1184 465" APPLIES TO cnx_3;
+  Stood::Link_Position => "770 391 711 391 711 341 484 341" APPLIES TO cnx_4;
+  Stood::Link_Position => "770 539 742 539 742 741 684 741" APPLIES TO cnx_5;
+  Stood::Link_Position => "1184 490 1196 490 1196 741 1220 741" APPLIES TO cnx_6;
+  Stood::Link_Position => "1184 415 1264 415 1264 416 1320 416" APPLIES TO cnx_7;
+  Stood::Link_Position => "300 400 300 1095 650 1095" APPLIES TO cnx_8;
+  Stood::Link_Position => "400 600 400 1095 650 1095" APPLIES TO cnx_9;
+  Stood::Link_Position => "500 800 500 1095 650 1095" APPLIES TO cnx_10;
+  Stood::Link_Position => "1300 800 1300 1095 1050 1095" APPLIES TO cnx_11;
+  Stood::Link_Position => "1500 500 1500 1095 1050 1095" APPLIES TO cnx_12;
+  Stood::Link_Position => "1100 600 1100 1095 1050 1095" APPLIES TO cnx_13;
+
+-- The following properties set the diagram layout in Stood instance diagram editor 
+-- of Dashboard subsystem
+  Stood::Box_Position => "778 323 978 506" APPLIES TO Dashboard.DashboardSW;
+  Stood::Box_Position => "416 910 616 1060" APPLIES TO Dashboard.DashboardCPU;
+  Stood::Box_Position => "987 911 1187 1061" APPLIES TO Dashboard.DashboardMemory;
+  Stood::Box_Position => "317 582 517 732" APPLIES TO Dashboard.ControlPanel;
+  Stood::Box_Position => "1259 396 1459 546" APPLIES TO Dashboard.DisplayScreen;
+  Stood::Port_Position => "left" APPLIES TO Dashboard.DashboardSW.commandsOut;
+  Stood::Port_Position => "left" APPLIES TO Dashboard.DashboardSW.statusIn;
+  Stood::Port_Position => "left" APPLIES TO Dashboard.DashboardSW.commandsIn;
+  Stood::Port_Position => "right" APPLIES TO Dashboard.DashboardSW.statusOut;
+  Stood::Port_Position => "right" APPLIES TO Dashboard.ControlPanel.commands;
+  Stood::Port_Position => "left" APPLIES TO Dashboard.DisplayScreen.status;
+  Stood::Link_Position => "290 265 521 265 521 388 768 388" APPLIES TO Dashboard.cnx_0;
+  Stood::Link_Position => "290 290 512 290 512 413 768 413" APPLIES TO Dashboard.cnx_1;
+  Stood::Link_Position => "1019 463 1129 463 1129 462 1229 462" APPLIES TO Dashboard.cnx_2;
+  Stood::Link_Position => "551 648 654 648 654 438 758 438" APPLIES TO Dashboard.cnx_3;
+-- Next connection is hidden due to a known bug in Stood SIF import feature:
+-- Stood::Link_Position => "519 1060 519 1200" applies to Dashboard.cnx_4;
+
+-- The following properties set the diagram layout in Stood instance diagram editor 
+-- of Motors subsystem:
+  Stood::Box_Position => "589 287 789 538" APPLIES TO Motors.MotorsSW;
+  Stood::Box_Position => "570 906 770 1056" APPLIES TO Motors.MotorsCPU;
+  Stood::Box_Position => "1070 898 1270 1048" APPLIES TO Motors.MotorsMemory;
+  Stood::Box_Position => "1119 291 1319 483" APPLIES TO Motors.RightMotor;
+  Stood::Box_Position => "1121 578 1321 769" APPLIES TO Motors.LeftMotor;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.status;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.control;
+  Stood::Port_Position => "right" APPLIES TO Motors.MotorsSW.status_right;
+  Stood::Port_Position => "right" APPLIES TO Motors.MotorsSW.control_right;
+  Stood::Port_Position => "right" APPLIES TO Motors.MotorsSW.status_left;
+  Stood::Port_Position => "right" APPLIES TO Motors.MotorsSW.control_left;
+  Stood::Port_Position => "left" APPLIES TO Motors.RightMotor.status;
+  Stood::Port_Position => "left" APPLIES TO Motors.RightMotor.control;
+  Stood::Port_Position => "left" APPLIES TO Motors.LeftMotor.status;
+  Stood::Port_Position => "left" APPLIES TO Motors.LeftMotor.control;
+  Stood::Link_Position => "354 265 540 265 540 385 626 385" APPLIES TO Motors.cnx_0;
+  Stood::Link_Position => "234 290 392 290 392 377 581 377" APPLIES TO Motors.cnx_1;
+  Stood::Link_Position => "838 427 967 427 967 382 1089 382" APPLIES TO Motors.cnx_2;
+  Stood::Link_Position => "832 477 932 477 932 669 1091 669" APPLIES TO Motors.cnx_3;
+  Stood::Link_Position => "1089 357 947 357 947 402 842 402" APPLIES TO Motors.cnx_4;
+  Stood::Link_Position => "1091 644 965 644 965 452 835 452" APPLIES TO Motors.cnx_5;
+-- Next connection is hidden due to a known bug in Stood SIF import feature:
+-- Stood::Link_Position => "660 1056 660 1200" applies to Motors.cnx_6;
+
+-- The following properties set the diagram layout in Stood instance diagram editor 
+-- of MainECU subsystem:
+  Stood::Box_Position => "580 880 796 1044" APPLIES TO MainECU.MainCPU;
+  Stood::Box_Position => "800 300 1150 600" APPLIES TO MainECU.MainSW;
+  Stood::Box_Position => "969 856 1209 1050" APPLIES TO MainECU.MainMemory;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.commands;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.status;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.signals_control;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.cells_status;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.motors_status;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.motors_control;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.batteries_status;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.batteries_control;
+  Stood::Link_Position => "290 265 532 265 532 365 790 365" APPLIES TO MainECU.cnx_0;
+  Stood::Link_Position => "351 290 451 290 451 684 654 684" APPLIES TO MainECU.cnx_1;
+  Stood::Link_Position => "290 315 515 315 515 415 790 415" APPLIES TO MainECU.cnx_2;
+  Stood::Link_Position => "290 340 507 340 507 440 790 440" APPLIES TO MainECU.cnx_3;
+  Stood::Link_Position => "290 365 498 365 498 465 790 465" APPLIES TO MainECU.cnx_4;
+  Stood::Link_Position => "290 390 490 390 490 490 790 490" APPLIES TO MainECU.cnx_5;
+  Stood::Link_Position => "290 415 482 415 482 515 790 515" APPLIES TO MainECU.cnx_6;
+  Stood::Link_Position => "290 440 473 440 473 540 790 540" APPLIES TO MainECU.cnx_7;
+-- Next connection is hidden due to a known bug in Stood SIF import feature:
+-- Stood::Link_Position => "700 1044 700 1200" applies to MainECU.cnx_8;
+
+-- The following properties set the diagram layout in Stood instance diagram editor 
+-- of Dashboard Software process:
+  Stood::Box_Position => "945 357 1145 507" APPLIES TO Dashboard.DashboardSW.ElaborateCommand;
+  Stood::Box_Position => "871 595 1071 745" APPLIES TO Dashboard.DashboardSW.DisplayStatus;
+  Stood::Port_Position => "left" APPLIES TO Dashboard.DashboardSW.ElaborateCommand.output;
+  Stood::Port_Position => "left" APPLIES TO Dashboard.DashboardSW.ElaborateCommand.input;
+  Stood::Port_Position => "left" APPLIES TO Dashboard.DashboardSW.DisplayStatus.input;
+  Stood::Port_Position => "left" APPLIES TO Dashboard.DashboardSW.DisplayStatus.output;
+  Stood::Link_Position => "290 265 604 265 604 422 935 422" APPLIES TO Dashboard.DashboardSW.cnx_0;
+  Stood::Link_Position => "290 315 587 315 587 447 935 447" APPLIES TO Dashboard.DashboardSW.cnx_1;
+  Stood::Link_Position => "290 290 558 290 558 660 861 660" APPLIES TO Dashboard.DashboardSW.cnx_2;
+  Stood::Link_Position => "290 340 542 340 542 685 861 685" APPLIES TO Dashboard.DashboardSW.cnx_3;
+
+-- The following properties set the diagram layout in Stood instance diagram editor 
+-- of Motors Software process:
+  Stood::Box_Position => "631 320 831 569" APPLIES TO Motors.MotorsSW.MotorsManager;
+  Stood::Box_Position => "1124 601 1324 793" APPLIES TO Motors.MotorsSW.RightController;
+  Stood::Box_Position => "1105 865 1305 1056" APPLIES TO Motors.MotorsSW.LeftController;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.MotorsManager.status;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.MotorsManager.control;
+  Stood::Port_Position => "right" APPLIES TO Motors.MotorsSW.MotorsManager.status_right;
+  Stood::Port_Position => "right" APPLIES TO Motors.MotorsSW.MotorsManager.control_right;
+  Stood::Port_Position => "right" APPLIES TO Motors.MotorsSW.MotorsManager.status_left;
+  Stood::Port_Position => "right" APPLIES TO Motors.MotorsSW.MotorsManager.control_left;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.RightController.status_out;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.RightController.control_in;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.RightController.status_in;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.RightController.control_out;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.LeftController.status_out;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.LeftController.control_in;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.LeftController.status_in;
+  Stood::Port_Position => "left" APPLIES TO Motors.MotorsSW.LeftController.control_out;
+  Stood::Link_Position => "348 315 485 315 485 716 1105 716" APPLIES TO Motors.MotorsSW.cnx_0;
+  Stood::Link_Position => "344 340 472 340 472 741 1102 741" APPLIES TO Motors.MotorsSW.cnx_1;
+  Stood::Link_Position => "341 365 457 365 457 980 1086 980" APPLIES TO Motors.MotorsSW.cnx_2;
+  Stood::Link_Position => "338 390 441 390 441 1005 1083 1005" APPLIES TO Motors.MotorsSW.cnx_3;
+  Stood::Link_Position => "354 265 540 265 540 385 626 385" APPLIES TO Motors.MotorsSW.cnx_4;
+  Stood::Link_Position => "351 290 529 290 529 410 622 410" APPLIES TO Motors.MotorsSW.cnx_5;
+  Stood::Link_Position => "1111 667 1004 667 1004 435 883 435" APPLIES TO Motors.MotorsSW.cnx_6;
+  Stood::Link_Position => "1092 931 986 931 986 485 877 485" APPLIES TO Motors.MotorsSW.cnx_7;
+  Stood::Link_Position => "880 460 996 460 996 692 1108 692" APPLIES TO Motors.MotorsSW.cnx_8;
+  Stood::Link_Position => "874 510 978 510 978 956 1089 956" APPLIES TO Motors.MotorsSW.cnx_9;
+
+-- The following properties set the diagram layout in Stood instance diagram editor 
+-- of MainECU Software process:
+  Stood::Box_Position => "908 271 1135 502" APPLIES TO MainECU.MainSW.ControlManager;
+  Stood::Box_Position => "660 619 900 863" APPLIES TO MainECU.MainSW.StatusManager;
+  Stood::Box_Position => "1130 889 1360 1061" APPLIES TO MainECU.MainSW.CarStatus;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.ControlManager.commands;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.ControlManager.signals;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.ControlManager.motors;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.ControlManager.batteries;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.StatusManager.status;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.StatusManager.cells;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.StatusManager.motors;
+  Stood::Port_Position => "left" APPLIES TO MainECU.MainSW.StatusManager.batteries;
+  Stood::Link_Position => "290 265 636 265 636 336 898 336" APPLIES TO MainECU.MainSW.cnx_0;
+  Stood::Link_Position => "290 315 617 315 617 361 898 361" APPLIES TO MainECU.MainSW.cnx_1;
+  Stood::Link_Position => "290 390 615 390 615 386 898 386" APPLIES TO MainECU.MainSW.cnx_2;
+  Stood::Link_Position => "290 440 615 440 615 411 898 411" APPLIES TO MainECU.MainSW.cnx_3;
+  Stood::Link_Position => "351 290 451 290 451 684 654 684" APPLIES TO MainECU.MainSW.cnx_4;
+  Stood::Link_Position => "344 340 439 340 439 709 651 709" APPLIES TO MainECU.MainSW.cnx_5;
+  Stood::Link_Position => "341 365 426 365 426 734 648 734" APPLIES TO MainECU.MainSW.cnx_6;
+  Stood::Link_Position => "335 415 413 415 413 759 644 759" APPLIES TO MainECU.MainSW.cnx_7;
+  Stood::Link_Position => "1032 502 1032 962 1130 962" APPLIES TO MainECU.MainSW.cnx_8;
+  Stood::Link_Position => "778 863 778 1022 1130 1022" APPLIES TO MainECU.MainSW.cnx_9;
+
+END CanBus.diagram;
+
+END canbus_Diag;
+
+
+

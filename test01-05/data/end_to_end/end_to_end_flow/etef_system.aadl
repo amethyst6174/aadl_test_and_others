@@ -1,0 +1,328 @@
+----------------------------------------
+-- End To End Flow Latency Analysis
+-- AADL Inspector
+-- (c) Ellidiss Technologies
+-- Updated: April 2023
+----------------------------------------
+
+PACKAGE etef_system_Pkg 
+PUBLIC
+WITH etef_types;
+
+SYSTEM etef_system
+ANNEX LAMP {**
+/*---------------------------------------------------*/
+  getFlowsLatency
+/*---------------------------------------------------*/
+**};
+END etef_system;
+
+SYSTEM IMPLEMENTATION etef_system.others
+SUBCOMPONENTS
+  Sensors : SYSTEM Sensors.i;
+  Processing : SYSTEM Processing.i;
+  Actuators : SYSTEM Actuators.i;
+  Communication : BUS CAN;
+CONNECTIONS
+  mes_cnx : PORT Sensors.measures -> Processing.measures {Timing => Immediate;};
+  cmd_cnx : PORT Processing.commands -> Actuators.commands {Timing => Immediate;};
+  com_sen : BUS ACCESS Communication -> Sensors.Communication;
+  com_pro : BUS ACCESS Communication -> Processing.Communication;
+  com_act : BUS ACCESS Communication -> Actuators.Communication;
+FLOWS
+  f1 : END TO END FLOW Sensors.f1 -> mes_cnx -> Processing.f1 -> cmd_cnx -> Actuators.f1;
+  f2 : END TO END FLOW Sensors.f2 -> mes_cnx -> Processing.f2 -> cmd_cnx -> Actuators.f2;
+PROPERTIES
+  Actual_Connection_Binding => ( reference(Communication) ) applies to mes_cnx, cmd_cnx;
+END etef_system.others;
+
+SYSTEM Sensors
+FEATURES
+  measures : OUT DATA PORT etef_types::Position.i;
+  Communication : REQUIRES BUS ACCESS CAN;
+FLOWS
+  f1 : FLOW SOURCE measures;
+  f2 : FLOW SOURCE measures;
+END Sensors;
+
+SYSTEM IMPLEMENTATION Sensors.i
+SUBCOMPONENTS
+  SensorsSW : PROCESS SensorsSW.i;
+  SensorsHW : PROCESSOR SensorsHW.i;
+  GPS : DEVICE GPS;
+  INS : DEVICE INS;
+CONNECTIONS
+  cnx1 : PORT SensorsSW.pos -> measures;
+  cnx2 : PORT GPS.pos -> SensorsSW.gps_pos;
+  cnx3 : PORT INS.pos -> SensorsSW.ins_pos;
+FLOWS
+  f1 : FLOW SOURCE GPS.f1 -> cnx2 -> SensorsSW.f1 -> cnx1 -> measures;
+  f2 : FLOW SOURCE INS.f2 -> cnx3 -> SensorsSW.f2 -> cnx1 -> measures;
+PROPERTIES
+  Actual_Processor_Binding => ( reference(SensorsHW) ) applies to SensorsSW;
+END Sensors.i;
+
+PROCESS SensorsSW
+FEATURES
+  pos : OUT DATA PORT etef_types::Position.i;
+  gps_pos : IN DATA PORT etef_types::Position.i;
+  ins_pos : IN DATA PORT etef_types::Position.i;
+FLOWS
+  f1 : FLOW PATH gps_pos -> pos;
+  f2 : FLOW PATH ins_pos -> pos;
+END SensorsSW;
+
+PROCESS IMPLEMENTATION SensorsSW.i
+SUBCOMPONENTS
+  GPS_Driver : THREAD GPS_Driver
+    { Dispatch_Protocol => Periodic;
+      Priority => 8;
+      Compute_Execution_Time => 2 ms..4 ms;
+      Deadline => 100 ms;
+      Period => 100 ms; };
+  INS_Driver : THREAD INS_Driver
+    { Dispatch_Protocol => Periodic;
+      Priority => 6;
+      Compute_Execution_Time => 8 ms..10 ms;
+      Deadline => 100 ms;
+      Period => 100 ms; };
+  DataMerge : THREAD DataMerge;
+CONNECTIONS
+  cnx1 : PORT gps_pos -> GPS_Driver.input;
+  cnx2 : PORT ins_pos -> INS_Driver.input;
+  cnx5 : PORT DataMerge.pos -> pos;
+  cnx3 : PORT GPS_Driver.output -> DataMerge.gps_input;
+  cnx4 : PORT INS_Driver.output -> DataMerge.ins_input;
+FLOWS
+  f1 : FLOW PATH gps_pos -> cnx1 -> GPS_Driver.f1 -> cnx3 -> DataMerge.f1 -> cnx5 -> pos;
+  f2 : FLOW PATH ins_pos -> cnx2 -> INS_Driver.f2 -> cnx4 -> DataMerge.f2 -> cnx5 -> pos;
+END SensorsSW.i;
+
+THREAD GPS_Driver
+FEATURES
+  input : IN DATA PORT etef_types::Position.i;
+  output : OUT EVENT DATA PORT etef_types::Position.i;
+FLOWS
+  f1 : FLOW PATH input -> output;
+END GPS_Driver;
+
+THREAD INS_Driver
+FEATURES
+  input : IN DATA PORT etef_types::Position.i;
+  output : OUT EVENT DATA PORT etef_types::Position.i;
+FLOWS
+  f2 : FLOW PATH input -> output;
+END INS_Driver;
+
+THREAD DataMerge
+FEATURES
+  gps_input : IN EVENT DATA PORT etef_types::Position.i;
+  ins_input : IN EVENT DATA PORT etef_types::Position.i;
+  pos : OUT DATA PORT etef_types::Position.i;
+FLOWS
+  f1 : FLOW PATH gps_input -> pos;
+  f2 : FLOW PATH ins_input -> pos;
+PROPERTIES
+  Dispatch_Protocol => Sporadic;
+  Priority => 10;
+--  Compute_Execution_Time => 10 ms..10 ms;
+  Deadline => 20 ms;
+  Period => 20 ms;
+ANNEX Behavior_Specification {**
+  STATES 
+    s1 : INITIAL COMPLETE STATE;
+    s2 : COMPLETE FINAL STATE;
+  TRANSITIONS
+    t1 : s1 -[ ON DISPATCH gps_input ]-> s2 { computation(5ms) };
+    t2 : s2 -[ ON DISPATCH ins_input ]-> s1 { computation(5ms); pos := 1 };
+**};
+END DataMerge;
+
+PROCESSOR SensorsHW
+END SensorsHW;
+
+PROCESSOR IMPLEMENTATION SensorsHW.i
+PROPERTIES
+  Scheduling_Protocol => (POSIX_1003_HIGHEST_PRIORITY_FIRST_PROTOCOL);
+END SensorsHW.i;
+
+DEVICE GPS
+FEATURES
+  pos : OUT DATA PORT etef_types::Position.i;
+FLOWS
+  f1 : FLOW SOURCE pos;
+END GPS;
+
+DEVICE INS
+FEATURES
+  pos : OUT DATA PORT etef_types::Position.i;
+FLOWS
+  f2 : FLOW SOURCE pos;
+END INS;
+
+SYSTEM Processing
+FEATURES
+  measures : IN DATA PORT etef_types::Position.i;
+  commands : OUT DATA PORT etef_types::Angle;
+  Communication : REQUIRES BUS ACCESS CAN;
+FLOWS
+  f1 : FLOW PATH measures -> commands;
+  f2 : FLOW PATH measures -> commands;
+END Processing;
+
+SYSTEM IMPLEMENTATION Processing.i
+SUBCOMPONENTS
+  ProcessingSW : PROCESS ProcessingSW.i;
+  ProcessingHW : PROCESSOR ProcessingHW;
+CONNECTIONS
+  cnx1 : PORT measures -> ProcessingSW.measures;
+  cnx2 : PORT ProcessingSW.commands -> commands;
+FLOWS
+  f1 : FLOW PATH measures -> cnx1 -> ProcessingSW.f1 -> cnx2 -> commands;
+  f2 : FLOW PATH measures -> cnx1 -> ProcessingSW.f2 -> cnx2 -> commands;
+PROPERTIES
+  Actual_Processor_Binding => ( reference(ProcessingHW) ) applies to ProcessingSW;
+END Processing.i;
+
+PROCESS ProcessingSW
+FEATURES
+  measures : IN DATA PORT etef_types::Position.i;
+  commands : OUT DATA PORT etef_types::Angle;
+FLOWS
+  f1 : FLOW PATH measures -> commands;
+  f2 : FLOW PATH measures -> commands;
+END ProcessingSW;
+
+PROCESS IMPLEMENTATION ProcessingSW.i
+SUBCOMPONENTS
+  ControlLogic : THREAD ControlLogic;
+CONNECTIONS
+  cnx1 : PORT measures -> ControlLogic.input;
+  cnx2 : PORT ControlLogic.output -> commands;
+FLOWS
+  f1 : FLOW PATH measures -> cnx1 -> ControlLogic.f1 -> cnx2 -> commands;
+  f2 : FLOW PATH measures -> cnx1 -> ControlLogic.f2 -> cnx2 -> commands;
+END ProcessingSW.i;
+
+THREAD ControlLogic
+FEATURES
+  input : IN DATA PORT etef_types::Position.i;
+  output : OUT DATA PORT etef_types::Angle;
+FLOWS
+  f1 : FLOW PATH input -> output;
+  f2 : FLOW PATH input -> output;
+PROPERTIES
+  Dispatch_Protocol => Periodic;
+  Compute_Execution_Time => 10ms .. 10 ms;
+  Deadline => 50 ms;
+  Period => 50 ms;
+END ControlLogic;
+
+PROCESSOR ProcessingHW
+PROPERTIES
+  Scheduling_Protocol => (RATE_MONOTONIC_PROTOCOL);
+END ProcessingHW;
+
+SYSTEM Actuators
+FEATURES
+  commands : IN DATA PORT etef_types::Angle;
+  Communication : REQUIRES BUS ACCESS CAN;
+FLOWS
+  f1 : FLOW SINK commands;
+  f2 : FLOW SINK commands;
+END Actuators;
+
+SYSTEM IMPLEMENTATION Actuators.i
+SUBCOMPONENTS
+  ActuatorsSW : PROCESS ActuatorsSW.i;
+  ActuatorsHW : PROCESSOR ActuatorsHW;
+  Helm : DEVICE Helm;
+CONNECTIONS
+  cnx1 : PORT commands -> ActuatorsSW.setpoint;
+  cnx2 : PORT ActuatorsSW.rotate -> Helm.rotate;
+  cnx3 : PORT Helm.feedback -> ActuatorsSW.feedback;
+FLOWS
+  f1 : FLOW SINK commands -> cnx1 -> ActuatorsSW.f1;
+  f2 : FLOW SINK commands -> cnx1 -> ActuatorsSW.f2;
+PROPERTIES
+  Actual_Processor_Binding => ( reference(ActuatorsHW) ) applies to ActuatorsSW;
+END Actuators.i;
+
+PROCESS ActuatorsSW
+FEATURES
+  setpoint : IN DATA PORT etef_types::Angle;
+  feedback : IN DATA PORT etef_types::Angle;
+  rotate : OUT EVENT PORT;
+FLOWS
+  f1 : FLOW PATH setpoint -> rotate;
+  f2 : FLOW PATH setpoint -> rotate;
+END ActuatorsSW;
+
+PROCESS IMPLEMENTATION ActuatorsSW.i
+SUBCOMPONENTS
+  HelmControl : THREAD HelmControl;
+CONNECTIONS
+  cnx1 : PORT setpoint -> HelmControl.setpoint;
+  cnx2 : PORT feedback -> HelmControl.feedback;
+  cnx3 : PORT HelmControl.rotate -> rotate;
+FLOWS
+  f1 : FLOW PATH setpoint -> cnx1 -> HelmControl.f1 -> cnx3 -> rotate;
+  f2 : FLOW PATH setpoint -> cnx1 -> HelmControl.f2 -> cnx3 -> rotate;
+END ActuatorsSW.i;
+
+THREAD HelmControl
+FEATURES
+  setpoint : IN DATA PORT etef_types::Angle;
+  feedback : IN DATA PORT etef_types::Angle;
+  rotate : OUT EVENT PORT;
+FLOWS
+  f1 : FLOW PATH setpoint -> rotate;
+  f2 : FLOW PATH setpoint -> rotate;
+PROPERTIES
+  Dispatch_Protocol => Periodic;
+  Compute_Execution_Time => 2 ms..2 ms;
+  Deadline => 10 ms;
+  Period => 10 ms;
+END HelmControl;
+
+PROCESSOR ActuatorsHW
+PROPERTIES
+  Scheduling_Protocol => (RATE_MONOTONIC_PROTOCOL);
+END ActuatorsHW;
+
+DEVICE Helm
+FEATURES
+  feedback : OUT DATA PORT etef_types::Angle;
+  rotate : IN EVENT PORT;
+FLOWS
+  f1 : FLOW SINK rotate;
+  f2 : FLOW SINK rotate;
+END Helm;
+
+BUS CAN
+PROPERTIES
+  Transmission_Type => PUSH;
+  Transmission_Time => [ Fixed => 1ms..1ms; PerByte => 1us..1us; ];
+END CAN;
+
+END etef_system_Pkg;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
